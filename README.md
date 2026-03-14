@@ -4,6 +4,8 @@
 
 Built with Python. Integrates with Microsoft Teams, SharePoint, and Microsoft Copilot.
 
+> **Live Portfolio Site:** [samlee8868.github.io/Daily-Stand-up](https://samlee8868.github.io/Daily-Stand-up)
+
 ---
 
 ## The Problem
@@ -25,46 +27,125 @@ ShowRunner is a single-command pipeline that:
 
 ## Architecture
 
+### Daily Pipeline
+
+```mermaid
+flowchart TD
+    subgraph input [Copilot Meeting Output]
+        Excel[Excel Tracker .xlsx]
+        JSON[Action Items .json]
+        Word[One-Pager .docx]
+        ExecSum[Executive Summary .docx]
+    end
+
+    subgraph parse [Multi-Format Parser]
+        Scanner[Inbox Scanner<br/>auto-detect team + date]
+        ExcelParse[Excel Parser<br/>12+ column aliases]
+        JSONParse[JSON Loader<br/>N/A normalization]
+        WordParse[Word Parser<br/>section detection]
+    end
+
+    subgraph recover [Truncation Recovery]
+        CrossRef[Cross-Reference Engine<br/>token-overlap similarity]
+    end
+
+    subgraph enrich [Business Logic]
+        CarryFwd[Carry-Forward<br/>open items persist]
+        Sprint[Sprint Enrichment<br/>metadata from config]
+        Urgency[Urgency Flags<br/>Overdue / Due Today / On Track]
+    end
+
+    subgraph output [Output]
+        EnrichedJSON[Enriched JSON]
+        Digest[Teams Digest]
+        Post[Post to Teams<br/>Webhook / Graph API]
+    end
+
+    Excel --> Scanner
+    JSON --> Scanner
+    Word --> Scanner
+    ExecSum --> Scanner
+    Scanner --> ExcelParse
+    Scanner --> JSONParse
+    Scanner --> WordParse
+    ExcelParse --> CrossRef
+    JSONParse --> CrossRef
+    WordParse --> CrossRef
+    CrossRef --> CarryFwd
+    CarryFwd --> Sprint
+    Sprint --> Urgency
+    Urgency --> EnrichedJSON
+    Urgency --> Digest
+    Digest --> Post
 ```
-Copilot Meeting Output
-  (Excel + Word + JSON)
-          |
-          v
-  +-----------------+       +------------------+
-  | Inbox Scanner   |------>| Multi-Format     |
-  | (auto-detect    |       | Parser           |
-  |  team + date)   |       | (Excel/JSON/Word)|
-  +-----------------+       +--------+---------+
-                                     |
-                            +--------v---------+
-                            | Cross-Reference   |
-                            | Engine            |
-                            | (fuzzy matching   |
-                            |  to recover       |
-                            |  truncated items) |
-                            +--------+---------+
-                                     |
-                  +------------------+------------------+
-                  |                  |                   |
-         +--------v------+  +-------v--------+  +------v--------+
-         | Carry-Forward |  | Sprint         |  | Urgency       |
-         | Logic         |  | Enrichment     |  | Flags         |
-         +--------+------+  +-------+--------+  +------+--------+
-                  |                  |                   |
-                  +------------------+------------------+
-                                     |
-                  +------------------+------------------+
-                  |                                     |
-         +--------v---------+               +-----------v----------+
-         | Daily Digest     |               | Sprint Aggregation   |
-         | (Teams-ready)    |               | + Executive Report   |
-         +--------+---------+               +-----------+----------+
-                  |                                     |
-         +--------v---------+               +-----------v----------+
-         | Post to Teams    |               | Metrics, Blockers,   |
-         | (Webhook/Graph)  |               | Health Assessment    |
-         +------------------+               +----------------------+
+
+### Sprint-End Flow
+
+```mermaid
+flowchart LR
+    subgraph daily [Daily JSON Files]
+        D1[Day 1]
+        D2[Day 2]
+        D3[...]
+        D10[Day 10]
+    end
+
+    Agg[Aggregate<br/>& Deduplicate]
+    History[Status History<br/>per item]
+    Blockers[Recurring Blocker<br/>Detection]
+    Metrics[Sprint Metrics<br/>completion rate<br/>priority breakdown<br/>resolution time]
+    Report[Executive<br/>Summary Report]
+    Teams[Teams Channel]
+    SP[SharePoint]
+
+    D1 --> Agg
+    D2 --> Agg
+    D3 --> Agg
+    D10 --> Agg
+    Agg --> History
+    History --> Blockers
+    Agg --> Metrics
+    Blockers --> Report
+    Metrics --> Report
+    Report --> Teams
+    Report --> SP
 ```
+
+### Data Transformation
+
+```mermaid
+flowchart LR
+    subgraph before [Before ShowRunner]
+        Messy["Inconsistent columns<br/>Truncated exports<br/>No carry-forward<br/>Manual reconciliation<br/>30-60 min/team/day"]
+    end
+
+    SR[ShowRunner<br/>Pipeline]
+
+    subgraph after [After ShowRunner]
+        Clean["Normalized schema<br/>Recovered items<br/>Auto carry-forward<br/>Urgency flags<br/>2 min total"]
+    end
+
+    before --> SR --> after
+```
+
+### How Cross-Referencing Works
+
+```mermaid
+sequenceDiagram
+    participant JSON as JSON Export<br/>1 item
+    participant Word as Word One-Pager<br/>9 items
+    participant Engine as Cross-Reference<br/>Engine
+    participant Output as Final Output<br/>9 items
+
+    JSON->>Engine: Primary items
+    Word->>Engine: Supplementary items
+    Engine->>Engine: Token-overlap similarity<br/>for each pair
+    Engine->>Engine: Items below 0.6 threshold<br/>= not in primary
+    Engine->>Output: Primary + recovered items
+    Note over Output: Tagged as "Recovered<br/>from Word doc"
+```
+
+---
 
 ## Key Features
 
@@ -78,6 +159,45 @@ Copilot Meeting Output
 | **Multi-Team** | Config-driven team definitions — add new teams with zero code changes |
 | **Teams Integration** | Adaptive Cards via Webhook or Graph API |
 | **SharePoint Integration** | Graph API with MSAL client credentials for document management |
+| **Prompt Engineering** | 260-line AI prompt spec with completeness verification and carry-forward rules |
+
+---
+
+## Sample Output
+
+### Daily Teams Digest
+
+```
+Daily Stand-up Digest — Platforms — 2026-03-13
+Sprint: Sprint 12 — Release 2.45 | Day 9 of 9
+
+NEW ITEMS (4)
+- Start work on Red Card after confirming priority — Owner: Jules — Priority: High
+- Resolve merge conflicts across IMF/Niagara branches — Owner: Frank — Priority: High
+- Review QA ticket 2389 spike — Owner: Bob — Priority: Medium
+- Adjust parameters to fix thumbnail aliasing — Owner: Grace — Priority: Medium
+
+Sprint Health: Green
+```
+
+### Enriched Action Item (JSON)
+
+```json
+{
+  "Document Date": "2026-03-13",
+  "Sprint": "Sprint 12 — Release 2.45",
+  "Project Name": "Platforms",
+  "Priority": "High",
+  "Action Item Description": "Resolve merge conflicts across branches",
+  "Owner (Full Name)": "Frank Okoro",
+  "Delivery Status": "In Progress",
+  "Urgency Flag": "On Track",
+  "Change Since Last Stand-up": "New",
+  "Dependencies / Blockers": "Multiple open MRs across repos",
+  "Risk Level": "Medium",
+  "Impact if Delayed": "Delays integration testing"
+}
+```
 
 ---
 
@@ -154,6 +274,7 @@ showrunner/
 | HTTP | requests |
 | Auth | MSAL (Azure AD client credentials) |
 | Config | JSON + python-dotenv |
+| Portfolio Site | GitHub Pages (HTML/CSS/JS) |
 
 ## Documentation
 
