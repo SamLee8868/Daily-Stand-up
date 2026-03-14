@@ -1,0 +1,4 @@
+Team,Date,Priority,Owner,Task,Description,Due Date,Status,Release
+MP GSS,2026-03-10,High,Dave,Complete QA for Release 2.45,Finish final QA testing required before release cut,2026-03-10,In Progress,2.45
+MP GSS,2026-03-10,High,Ian,Cut Release 2.45,Coordinate release cut and deployment,2026-03-11,Not Started,2.45
+MP GSS,2026-03-10,High,Julia,Update DCP prod credentials,Rotate JWT/secret due to auth change,2026-03-12,Not Started,2.45

@@ -1,0 +1,22 @@
+{
+  "sprints": [
+    {
+      "number": 12,
+      "name": "Sprint 12 — Release 2.45",
+      "start_date": "2026-03-03",
+      "end_date": "2026-03-14",
+      "teams": ["APPS", "GSS", "PLAT"],
+      "goal": "Release 2.45 — QA validation, release cut, DCP auth migration"
+    },
+    {
+      "number": 13,
+      "name": "Sprint 13",
+      "start_date": "2026-03-17",
+      "end_date": "2026-03-28",
+      "teams": ["APPS", "GSS", "PLAT"],
+      "goal": ""
+    }
+  ],
+  "sprint_duration_days": 10,
+  "sprint_cadence": "bi-weekly"
+}

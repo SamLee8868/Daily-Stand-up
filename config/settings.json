@@ -1,0 +1,22 @@
+{
+  "notifications": {
+    "daily_digest_time": "07:00",
+    "timezone": "America/New_York",
+    "skip_weekends": true,
+    "skip_holidays": false
+  },
+  "sprint_report": {
+    "generate_on": "sprint_end",
+    "email_distribution_list": [],
+    "post_to_teams": true
+  },
+  "storage": {
+    "sharepoint_site_url": "",
+    "document_library": "ShowRunner",
+    "local_output_dir": "output/"
+  },
+  "copilot": {
+    "prompt_version": "v2",
+    "prompt_file": "prompts/daily-standup-master-prompt-v2.md"
+  }
+}

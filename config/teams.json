@@ -1,0 +1,44 @@
+{
+  "teams": [
+    {
+      "id": "APPS",
+      "name": "Applications",
+      "project_name": "Applications",
+      "meeting_names": ["Applications Daily Stand-up", "APPS Daily Stand-up"],
+      "members": [
+        {"name": "Alice Chen", "role": "Engineer"},
+        {"name": "Bob Torres", "role": "Engineer"}
+      ],
+      "scrum_master": "Your Name",
+      "teams_channel_webhook": "",
+      "sharepoint_folder": "/ShowRunner/APPS"
+    },
+    {
+      "id": "GSS",
+      "name": "Guest Services",
+      "project_name": "Guest Services",
+      "meeting_names": ["GSS Daily Stand-up", "Guest Services Daily Stand-up"],
+      "members": [
+        {"name": "Carol Reyes", "role": "QA"},
+        {"name": "Dave Kim", "role": "Release Manager"},
+        {"name": "Eve Patel", "role": "Engineer"}
+      ],
+      "scrum_master": "Your Name",
+      "teams_channel_webhook": "",
+      "sharepoint_folder": "/ShowRunner/GSS"
+    },
+    {
+      "id": "PLAT",
+      "name": "Platforms",
+      "project_name": "Platforms",
+      "meeting_names": ["Platforms Daily Stand-up", "PLAT Daily Stand-up"],
+      "members": [
+        {"name": "Frank Okoro", "role": "Engineer"},
+        {"name": "Grace Liu", "role": "Engineer"}
+      ],
+      "scrum_master": "Your Name",
+      "teams_channel_webhook": "",
+      "sharepoint_folder": "/ShowRunner/PLAT"
+    }
+  ]
+}

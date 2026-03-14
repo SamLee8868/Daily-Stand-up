@@ -1,0 +1,42 @@
+# macOS
+.DS_Store
+._*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Secrets and credentials
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Generated deliverables (these go to SharePoint, not Git)
+output/
+
+# Portfolio docs (kept locally, not in repo)
+*.docx
+.pylibs/
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
